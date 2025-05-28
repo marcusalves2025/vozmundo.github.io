@@ -1,448 +1,874 @@
-import { useState, useRef, useEffect } from 'react'
-import './App.css'
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VozMundo - Conectando Idiomas, Unindo Pessoas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --border: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: white;
+            color: var(--primary);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 4rem 5%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjAuNSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiLz48L3N2Zz4=');
+            opacity: 0.2;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero h2 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+        
+        .slogan {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+        
+        /* Command Prompt */
+        .command-prompt {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .command-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .command-header i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .command-text {
+            font-family: monospace;
+            font-size: 1.1rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.2rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .command-variables {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .variable-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .variable-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .select-box, .radio-group {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .select-box option {
+            color: var(--dark);
+        }
+        
+        .radio-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .radio-option input {
+            margin-right: 5px;
+        }
+        
+        .start-btn {
+            background-color: white;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Features Section */
+        .section {
+            padding: 5rem 5%;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .feature-card ul {
+            list-style-type: none;
+            margin-left: 1rem;
+        }
+        
+        .feature-card ul li {
+            margin-bottom: 0.8rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .feature-card ul li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        /* How it works */
+        .how-it-works {
+            background-color: var(--light);
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .step-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .step-card h3 {
+            margin: 1.5rem 0 1rem;
+            color: var(--dark);
+        }
+        
+        /* Languages */
+        .languages {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .languages .section-title h2,
+        .languages .section-title p {
+            color: white;
+        }
+        
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .language-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .language-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .language-item i {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 4rem 5% 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .footer-column h3::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+        
+        .footer-links {
+            list-style-type: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h2 {
+                font-size: 2.5rem;
+            }
+            
+            .command-variables {
+                flex-direction: column;
+            }
+            
+            .section {
+                padding: 3rem 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                <i class="fas fa-globe-americas"></i>
+                <h1>VozMundo</h1>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Recursos</a>
+                <a href="#how-it-works">Como Funciona</a>
+                <a href="#languages">Idiomas</a>
+                <a href="#pricing">Preços</a>
+                <a href="#contact">Contato</a>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline">Login</button>
+                <button class="btn btn-primary">Começar Gratuitamente</button>
+            </div>
+        </div>
+    </header>
 
-function App() {
-  const [inputText, setInputText] = useState('')
-  const [sourceLanguage, setSourceLanguage] = useState('auto')
-  const [targetLanguage, setTargetLanguage] = useState('pt-BR')
-  const [detectedLanguage, setDetectedLanguage] = useState<string | null>(null)
-  const [isTranslating, setIsTranslating] = useState(false)
-  const [translatedText, setTranslatedText] = useState('')
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isDarkTheme, setIsDarkTheme] = useState(true)
-  const [selectedVoice, setSelectedVoice] = useState('default')
-  const [speechRate, setSpeechRate] = useState(1)
-  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([])
-  const [audioError, setAudioError] = useState<string | null>(null)
-  const [voiceDebugInfo, setVoiceDebugInfo] = useState<string | null>(null)
-  const [translationError, setTranslationError] = useState<string | null>(null)
-  
-  // Referência para controlar a síntese de voz
-  const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null)
-  
-  // Efeito para aplicar o tema
-  useEffect(() => {
-    document.body.classList.toggle('light-theme', !isDarkTheme)
-  }, [isDarkTheme])
-  
-  // Efeito para carregar as vozes disponíveis
-  useEffect(() => {
-    // Verificar se a API de síntese de voz está disponível
-    if (!window.speechSynthesis) {
-      console.error("API de síntese de voz não suportada neste navegador")
-      setAudioError("Seu navegador não suporta síntese de voz. Tente usar Chrome, Edge ou Safari.")
-      return
-    }
-    
-    const loadVoices = () => {
-      const voices = window.speechSynthesis.getVoices()
-      console.log("Vozes disponíveis:", voices.length)
-      
-      let voiceInfo = "Vozes disponíveis:\n"
-      voices.forEach((voice, index) => {
-        const voiceDetails = `${index+1}. ${voice.name} (${voice.lang}) - ${voice.localService ? 'Local' : 'Remota'}`
-        console.log(voiceDetails)
-        voiceInfo += voiceDetails + "\n"
-      })
-      
-      if (voices.length > 0) {
-        setAvailableVoices(voices)
-        setVoiceDebugInfo(voiceInfo)
-        setAudioError(null)
-      } else {
-        setAudioError("Nenhuma voz disponível. Tente recarregar a página ou usar outro navegador.")
-        setVoiceDebugInfo("Nenhuma voz disponível no navegador.")
-      }
-    }
-    
-    // Carregar vozes iniciais
-    loadVoices()
-    
-    // Configurar evento para quando as vozes forem carregadas
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = loadVoices
-    }
-    
-    // Garantir que o speechSynthesis esteja inicializado
-    try {
-      // Inicializar o speechSynthesis com um texto vazio para garantir que esteja pronto
-      const initUtterance = new SpeechSynthesisUtterance('')
-      window.speechSynthesis.speak(initUtterance)
-      window.speechSynthesis.cancel() // Cancelar imediatamente
-    } catch (error) {
-      console.error("Erro ao inicializar speechSynthesis:", error)
-      setAudioError("Erro ao inicializar o sistema de voz. Tente recarregar a página.")
-    }
-    
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null
-      // Limpar qualquer síntese de voz pendente
-      window.speechSynthesis.cancel()
-    }
-  }, [])
-  
-  // Lista expandida de idiomas suportados
-  const languages = [
-    { code: 'auto', name: 'Detectar idioma' },
-    { code: 'af', name: 'Africâner' },
-    { code: 'sq', name: 'Albanês' },
-    { code: 'am', name: 'Amárico' },
-    { code: 'ar', name: 'Árabe' },
-    { code: 'hy', name: 'Armênio' },
-    { code: 'az', name: 'Azerbaijano' },
-    { code: 'eu', name: 'Basco' },
-    { code: 'be', name: 'Bielorrusso' },
-    { code: 'bn', name: 'Bengali' },
-    { code: 'bs', name: 'Bósnio' },
-    { code: 'bg', name: 'Búlgaro' },
-    { code: 'ca', name: 'Catalão' },
-    { code: 'ceb', name: 'Cebuano' },
-    { code: 'ny', name: 'Chichewa' },
-    { code: 'zh', name: 'Chinês' },
-    { code: 'co', name: 'Corso' },
-    { code: 'hr', name: 'Croata' },
-    { code: 'cs', name: 'Tcheco' },
-    { code: 'da', name: 'Dinamarquês' },
-    { code: 'nl', name: 'Holandês' },
-    { code: 'en', name: 'Inglês' },
-    { code: 'eo', name: 'Esperanto' },
-    { code: 'et', name: 'Estoniano' },
-    { code: 'tl', name: 'Filipino' },
-    { code: 'fi', name: 'Finlandês' },
-    { code: 'fr', name: 'Francês' },
-    { code: 'fy', name: 'Frísio' },
-    { code: 'gl', name: 'Galego' },
-    { code: 'ka', name: 'Georgiano' },
-    { code: 'de', name: 'Alemão' },
-    { code: 'el', name: 'Grego' },
-    { code: 'gu', name: 'Gujarati' },
-    { code: 'ht', name: 'Crioulo Haitiano' },
-    { code: 'ha', name: 'Hauçá' },
-    { code: 'haw', name: 'Havaiano' },
-    { code: 'iw', name: 'Hebraico' },
-    { code: 'he', name: 'Hebraico' },
-    { code: 'hi', name: 'Hindi' },
-    { code: 'hmn', name: 'Hmong' },
-    { code: 'hu', name: 'Húngaro' },
-    { code: 'is', name: 'Islandês' },
-    { code: 'ig', name: 'Igbo' },
-    { code: 'id', name: 'Indonésio' },
-    { code: 'ga', name: 'Irlandês' },
-    { code: 'it', name: 'Italiano' },
-    { code: 'ja', name: 'Japonês' },
-    { code: 'jw', name: 'Javanês' },
-    { code: 'kn', name: 'Canarês' },
-    { code: 'kk', name: 'Cazaque' },
-    { code: 'km', name: 'Khmer' },
-    { code: 'ko', name: 'Coreano' },
-    { code: 'ku', name: 'Curdo (Kurmanji)' },
-    { code: 'ky', name: 'Quirguiz' },
-    { code: 'lo', name: 'Laosiano' },
-    { code: 'la', name: 'Latim' },
-    { code: 'lv', name: 'Letão' },
-    { code: 'lt', name: 'Lituano' },
-    { code: 'lb', name: 'Luxemburguês' },
-    { code: 'mk', name: 'Macedônio' },
-    { code: 'mg', name: 'Malgaxe' },
-    { code: 'ms', name: 'Malaio' },
-    { code: 'ml', name: 'Malaiala' },
-    { code: 'mt', name: 'Maltês' },
-    { code: 'mi', name: 'Maori' },
-    { code: 'mr', name: 'Marathi' },
-    { code: 'mn', name: 'Mongol' },
-    { code: 'my', name: 'Birmanês (Myanmar)' },
-    { code: 'ne', name: 'Nepalês' },
-    { code: 'no', name: 'Norueguês' },
-    { code: 'or', name: 'Odia (Oriya)' },
-    { code: 'ps', name: 'Pashto' },
-    { code: 'fa', name: 'Persa' },
-    { code: 'pl', name: 'Polonês' },
-    { code: 'pt', name: 'Português' },
-    { code: 'pa', name: 'Punjabi' },
-    { code: 'ro', name: 'Romeno' },
-    { code: 'ru', name: 'Russo' },
-    { code: 'sm', name: 'Samoano' },
-    { code: 'gd', name: 'Gaélico Escocês' },
-    { code: 'sr', name: 'Sérvio' },
-    { code: 'st', name: 'Sesotho' },
-    { code: 'sn', name: 'Shona' },
-    { code: 'sd', name: 'Sindi' },
-    { code: 'si', name: 'Cingalês' },
-    { code: 'sk', name: 'Eslovaco' },
-    { code: 'sl', name: 'Esloveno' },
-    { code: 'so', name: 'Somali' },
-    { code: 'es', name: 'Espanhol' },
-    { code: 'su', name: 'Sundanês' },
-    { code: 'sw', name: 'Suaíli' },
-    { code: 'sv', name: 'Sueco' },
-    { code: 'tg', name: 'Tadjique' },
-    { code: 'ta', name: 'Tâmil' },
-    { code: 'te', name: 'Télugo' },
-    { code: 'th', name: 'Tailandês' },
-    { code: 'tr', name: 'Turco' },
-    { code: 'uk', name: 'Ucraniano' },
-    { code: 'ur', name: 'Urdu' },
-    { code: 'ug', name: 'Uigur' },
-    { code: 'uz', name: 'Uzbeque' },
-    { code: 'vi', name: 'Vietnamita' },
-    { code: 'cy', name: 'Galês' },
-    { code: 'xh', name: 'Xhosa' },
-    { code: 'yi', name: 'Iídiche' },
-    { code: 'yo', name: 'Iorubá' },
-    { code: 'zu', name: 'Zulu' }
-  ]
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Conectando Idiomas, Unindo Pessoas</h2>
+            <p>A plataforma definitiva de tradução de áudios e voz com inteligência artificial</p>
+            <div class="slogan">"Sua voz, em todas as línguas."</div>
+            
+            <div class="command-prompt">
+                <div class="command-header">
+                    <i class="fas fa-microphone-alt"></i>
+                    <h3>Prompt de Comando Inteligente</h3>
+                </div>
+                <div class="command-text">
+                    "Olá, VozMundo! Inicie uma nova tradução de áudio. Quero transcrever, traduzir e exportar este conteúdo com sincronização em tempo real."
+                </div>
+                
+                <div class="command-variables">
+                    <div class="variable-group">
+                        <label for="source-lang">Idioma de Origem</label>
+                        <select id="source-lang" class="select-box">
+                            <option value="auto">Detecção Automática</option>
+                            <option value="pt">Português</option>
+                            <option value="en">Inglês</option>
+                            <option value="es">Espanhol</option>
+                            <option value="fr">Francês</option>
+                            <option value="de">Alemão</option>
+                            <option value="zh">Chinês</option>
+                        </select>
+                    </div>
+                    
+                    <div class="variable-group">
+                        <label for="target-lang">Idioma de Destino</label>
+                        <select id="target-lang" class="select-box">
+                            <option value="en">Inglês</option>
+                            <option value="pt">Português</option>
+                            <option value="es">Espanhol</option>
+                            <option value="fr">Francês</option>
+                            <option value="de">Alemão</option>
+                            <option value="zh">Chinês</option>
+                            <option value="ja">Japonês</option>
+                        </select>
+                    </div>
+                    
+                    <div class="variable-group">
+                        <label>Formato de Exportação</label>
+                        <div class="radio-group">
+                            <div class="radio-options">
+                                <div class="radio-option">
+                                    <input type="radio" id="text" name="export-format" value="text" checked>
+                                    <label for="text">Texto</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="audio" name="export-format" value="audio">
+                                    <label for="audio">Áudio</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="video" name="export-format" value="video">
+                                    <label for="video">Vídeo Legendado</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="start-btn">
+                    <i class="fas fa-play"></i>
+                    Pronto para começar!
+                </button>
+            </div>
+        </div>
+    </section>
 
-  // Mapeamento de idiomas para códigos de país (para síntese de voz)
-  const languageToVoiceMapping: Record<string, string> = {
-    'af': 'af-ZA',
-    'ar': 'ar-SA',
-    'bg': 'bg-BG',
-    'ca': 'ca-ES',
-    'cs': 'cs-CZ',
-    'da': 'da-DK',
-    'de': 'de-DE',
-    'el': 'el-GR',
-    'en': 'en-US',
-    'es': 'es-ES',
-    'et': 'et-EE',
-    'fi': 'fi-FI',
-    'fr': 'fr-FR',
-    'he': 'he-IL',
-    'hi': 'hi-IN',
-    'hr': 'hr-HR',
-    'hu': 'hu-HU',
-    'id': 'id-ID',
-    'is': 'is-IS',
-    'it': 'it-IT',
-    'ja': 'ja-JP',
-    'ko': 'ko-KR',
-    'lt': 'lt-LT',
-    'lv': 'lv-LV',
-    'ms': 'ms-MY',
-    'nl': 'nl-NL',
-    'no': 'nb-NO',
-    'pl': 'pl-PL',
-    'pt': 'pt-BR',
-    'ro': 'ro-RO',
-    'ru': 'ru-RU',
-    'sk': 'sk-SK',
-    'sl': 'sl-SI',
-    'sr': 'sr-RS',
-    'sv': 'sv-SE',
-    'th': 'th-TH',
-    'tr': 'tr-TR',
-    'uk': 'uk-UA',
-    'vi': 'vi-VN',
-    'zh': 'zh-CN'
-  }
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="section-title">
+            <h2>Recursos Inovadores</h2>
+            <p>Descubra como a VozMundo revoluciona a comunicação entre idiomas</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <h3>Reconhecimento de Voz</h3>
+                <ul>
+                    <li>Alta precisão em qualquer ambiente</li>
+                    <li>Detecção automática de idioma e sotaque</li>
+                    <li>Suporte a termos técnicos e expressões</li>
+                    <li>Cancelamento de ruído inteligente</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-language"></i>
+                </div>
+                <h3>Tradução em Tempo Real</h3>
+                <ul>
+                    <li>Análise do sentido completo da frase</li>
+                    <li>Tradução neural adaptativa</li>
+                    <li>Personalização de formalidade e estilo</li>
+                    <li>Sincronização perfeita</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3>Transcrição e Edição</h3>
+                <ul>
+                    <li>Texto com pontuação automática</li>
+                    <li>Interface de edição intuitiva</li>
+                    <li>Sugestões inteligentes de correção</li>
+                    <li>Exportação em múltiplos formatos</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Ferramentas Profissionais</h3>
+                <ul>
+                    <li>Modos específicos (reunião, aula, entrevista)</li>
+                    <li>Traduções colaborativas em tempo real</li>
+                    <li>Histórico completo de projetos</li>
+                    <li>Integração com outras plataformas</li>
+                </ul>
+            </div>
+        </div>
+    </section>
 
-  // Configurações de voz para tipos de IA
-  const aiVoiceSettings = {
-    default: { pitch: 1, rate: 1, voiceType: 'default', name: 'IA Padrão', description: 'Voz neutra e equilibrada' },
-    ia_natural: { pitch: 1.05, rate: 1, voiceType: 'female', name: 'IA Natural', description: 'Voz humana realista com entonação natural' },
-    ia_assistente: { pitch: 1.1, rate: 0.95, voiceType: 'female', name: 'IA Assistente', description: 'Voz clara e prestativa, ideal para instruções' },
-    ia_narrador: { pitch: 0.9, rate: 0.9, voiceType: 'male', name: 'IA Narrador', description: 'Voz profunda e envolvente para narrativas' },
-    ia_robótica: { pitch: 0.7, rate: 1.1, voiceType: 'male', name: 'IA Robótica', description: 'Voz metálica e artificial com tom sintético' }
-  }
+    <!-- How it Works -->
+    <section class="section how-it-works" id="how-it-works">
+        <div class="section-title">
+            <h2>Como Funciona</h2>
+            <p>Traduza qualquer áudio em quatro passos simples</p>
+        </div>
+        
+        <div class="steps">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <i class="fas fa-upload fa-2x" style="color: var(--primary);"></i>
+                <h3>Carregue seu Áudio</h3>
+                <p>Envie seu arquivo de áudio ou grave diretamente pelo microfone.</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <i class="fas fa-cogs fa-2x" style="color: var(--primary);"></i>
+                <h3>Configure as Opções</h3>
+                <p>Escolha idiomas, formatação e opções de exportação.</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <i class="fas fa-robot fa-2x" style="color: var(--primary);"></i>
+                <h3>Processamento Inteligente</h3>
+                <p>Nossa IA transcreve, traduz e sincroniza seu conteúdo.</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <i class="fas fa-download fa-2x" style="color: var(--primary);"></i>
+                <h3>Exporte e Compartilhe</h3>
+                <p>Baixe ou compartilhe seu conteúdo traduzido no formato desejado.</p>
+            </div>
+        </div>
+    </section>
 
-  // Função para detectar o idioma do texto
-  const detectLanguage = async (text: string) => {
-    if (!text.trim()) return null
-    
-    try {
-      // Usando a API LibreTranslate para detecção de idioma
-      const response = await fetch('https://libretranslate.de/detect', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          q: text
-        })
-      })
-      
-      if (!response.ok) {
-        throw new Error(`Erro na API de detecção: ${response.status} ${response.statusText}`)
-      }
-      
-      const data = await response.json()
-      
-      if (data && data.length > 0 && data[0].language) {
-        console.log("Idioma detectado:", data[0].language)
-        return data[0].language
-      } else {
-        throw new Error('Resposta da API não contém idioma detectado')
-      }
-    } catch (error) {
-      console.error("Erro na detecção de idioma:", error)
-      return null
-    }
-  }
+    <!-- Languages -->
+    <section class="section languages" id="languages">
+        <div class="section-title">
+            <h2>Suporte Multilíngue</h2>
+            <p>Mais de 100 idiomas com suporte ativo</p>
+        </div>
+        
+        <div class="language-grid">
+            <div class="language-item">
+                <i class="fas fa-language"></i>
+                <h4>Português</h4>
+            </div>
+            <div class="language-item">
+                <i class="fas fa-language"></i>
+                <h4>Inglês</h4>
+            </div>
+            <div class="language-item">
+                <i class="fas fa-language"></i>
+                <h4>Espanhol</h4>
+            </div>
+            <div class="language-item">
+                <i class="fas fa-language"></i>
+                <h4>Francês</h4>
+            </div>
+            <div class="language-item">
+                <i class="fas fa-language"></i>
+                <h4>Alemão</h4>
+            </div>
+            <div class="language-item">
+                <i class="fas fa-language"></i>
+                <h4>Italiano</h4>
+            </div>
+            <div class="language-item">
+                <i class="fas fa-language"></i>
+                <h4>Chinês</h4>
+            </div>
+            <div class="language-item">
+                <i class="fas fa-language"></i>
+                <h4>Japonês</h4>
+            </div>
+        </div>
+    </section>
 
-  // Função para traduzir texto usando a API LibreTranslate
-  const translateText = async (text: string, source: string, target: string) => {
-    if (!text.trim()) return ""
-    
-    // Se o idioma de origem for 'auto', tentamos detectar o idioma primeiro
-    let sourceCode = source
-    if (source === 'auto') {
-      const detectedCode = await detectLanguage(text)
-      if (detectedCode) {
-        sourceCode = detectedCode
-        setDetectedLanguage(detectedCode)
-      } else {
-        sourceCode = 'en' // Fallback para inglês se não conseguir detectar
-        setDetectedLanguage('en')
-      }
-    } else {
-      // Extrair apenas o código de idioma principal (ex: 'pt' de 'pt-BR')
-      sourceCode = source.split('-')[0]
-    }
-    
-    // Para o idioma de destino, usamos apenas o código principal (ex: 'pt' de 'pt-BR')
-    const targetCode = target.split('-')[0]
-    
-    // Se os idiomas forem iguais, apenas retornamos o texto original
-    if (sourceCode === targetCode) {
-      return text
-    }
-    
-    try {
-      // Usando a API LibreTranslate (pública)
-      const response = await fetch('https://libretranslate.de/translate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          q: text,
-          source: sourceCode,
-          target: targetCode,
-          format: 'text'
-        })
-      })
-      
-      if (!response.ok) {
-        throw new Error(`Erro na API: ${response.status} ${response.statusText}`)
-      }
-      
-      const data = await response.json()
-      
-      if (data.translatedText) {
-        return data.translatedText
-      } else {
-        throw new Error('Resposta da API não contém texto traduzido')
-      }
-    } catch (error) {
-      console.error("Erro na tradução:", error)
-      throw error
-    }
-  }
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>VozMundo</h3>
+                <p>Sua voz, em todas as línguas. A plataforma definitiva para transcrição e tradução de áudio com inteligência artificial.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Produto</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Recursos</a></li>
+                    <li><a href="#">Planos e Preços</a></li>
+                    <li><a href="#">Casos de Uso</a></li>
+                    <li><a href="#">API para Desenvolvedores</a></li>
+                    <li><a href="#">Downloads</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Suporte</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Central de Ajuda</a></li>
+                    <li><a href="#">Tutoriais</a></li>
+                    <li><a href="#">Comunidade</a></li>
+                    <li><a href="#">Status do Sistema</a></li>
+                    <li><a href="#">Contato</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Empresa</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Sobre Nós</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Carreiras</a></li>
+                    <li><a href="#">Parceiros</a></li>
+                    <li><a href="#">Imprensa</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2023 VozMundo. Todos os direitos reservados.
+        </div>
+    </footer>
 
-  // Função para lidar com a tradução
-  const handleTranslate = async () => {
-    if (!inputText.trim()) return
-    
-    setIsTranslating(true)
-    setTranslationError(null)
-    setDetectedLanguage(null)
-    
-    try {
-      // Traduzir o texto usando a API
-      const translated = await translateText(inputText, sourceLanguage, targetLanguage)
-      setTranslatedText(translated)
-    } catch (error) {
-      console.error("Erro ao traduzir:", error)
-      setTranslationError(`Erro ao traduzir: ${error}. Usando simulação como fallback.`)
-      
-      // Fallback para simulação em caso de erro
-      setTranslatedText(`Texto traduzido (simulado): ${inputText}`)
-    } finally {
-      setIsTranslating(false)
-    }
-  }
-
-  // Função para lidar com upload de imagem (OCR)
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      // Aqui seria implementada a lógica de OCR
-      // Por enquanto, apenas mostramos o nome do arquivo
-      setInputText(`[OCR pendente para o arquivo: ${file.name}]`)
-    }
-  }
-
-  // Função para encontrar a melhor voz disponível para um idioma específico
-  const findBestVoice = (lang: string, voiceType: string) => {
-    // Verificar se temos vozes disponíveis
-    if (availableVoices.length === 0) {
-      console.warn("Nenhuma voz disponível para seleção")
-      return null
-    }
-    
-    // Extrair o código de idioma principal (ex: 'pt' de 'pt-BR')
-    const mainLang = lang.toLowerCase().split('-')[0]
-    
-    // Tentar encontrar uma voz exata para o idioma completo (incluindo região)
-    let exactVoices = availableVoices.filter(voice => 
-      voice.lang.toLowerCase() === lang.toLowerCase()
-    )
-    
-    // Se não encontrar voz exata, tentar pelo código principal
-    if (exactVoices.length === 0) {
-      exactVoices = availableVoices.filter(voice => 
-        voice.lang.toLowerCase().startsWith(mainLang.toLowerCase() + '-')
-      )
-    }
-    
-    // Se ainda não encontrar, tentar qualquer voz que contenha o código principal
-    if (exactVoices.length === 0) {
-      exactVoices = availableVoices.filter(voice => 
-        voice.lang.toLowerCase().includes(mainLang.toLowerCase())
-      )
-    }
-    
-    // Se encontrou vozes para o idioma, filtrar pelo tipo (feminina/masculina)
-    if (exactVoices.length > 0) {
-      if (voiceType === 'female') {
-        const femaleVoice = exactVoices.find(voice => 
-          voice.name.toLowerCase().includes('female') || 
-          voice.name.toLowerCase().includes('woman') ||
-          voice.name.toLowerCase().includes('girl') ||
-          voice.name.toLowerCase().includes('f') ||
-          voice.name.toLowerCase().includes('mulher') ||
-          voice.name.toLowerCase().includes('feminina')
-        )
-        if (femaleVoice) return femaleVoice
-      }
-      
-      if (voiceType === 'male') {
-        const maleVoice = exactVoices.find(voice => 
-          voice.name.toLowerCase().includes('male') || 
-          voice.name.toLowerCase().includes('man') ||
-          voice.name.toLowerCase().includes('boy') ||
-          voice.name.toLowerCase().includes('m') ||
-          voice.name.toLowerCase().includes('homem') ||
-          voice.name.toLowerCase().includes('masculino')
-        )
-        if (maleVoice) return maleVoice
-      }
-      
-      // Se não encontrar voz específica do tipo, retorna a primeira disponível para o idioma
-      return exactVoices[0]
-    }
-    
-    // Se não encontrar vozes para o idioma específico, tente encontrar para inglês como fallback
-    console.warn(`Nenhuma voz encontrada para o idioma ${lang}, usando fallback para inglês`)
-    const englishVoices = availableVoices.filter(voice => 
-      voice.lang.toLowerCase().includes('en-')
-    )
-    
-    if (englishVoices.length > 0) {
-      // Tentar encontrar voz em inglês do tipo especificado
-      if (voiceType === 'female') {
-        const femaleVoice = englishVoices.find(voice => 
-          voice.name.toLowerCase().includes('female') || 
-          voice.name.toLowerCase().includes('woman') ||
-          voice.name.toLowerCase
-(Content truncated due to size limit. Use line ranges to read in chunks)
+    <script>
+        // Simulação do comando de voz
+        document.querySelector('.start-btn').addEventListener('click', function() {
+            const sourceLang = document.getElementById('source-lang').value;
+            const targetLang = document.getElementById('target-lang').value;
+            const exportFormat = document.querySelector('input[name="export-format"]:checked').value;
+            
+            // Obter o nome dos idiomas selecionados
+            const langNames = {
+                'auto': 'Detecção Automática',
+                'pt': 'Português',
+                'en': 'Inglês',
+                'es': 'Espanhol',
+                'fr': 'Francês',
+                'de': 'Alemão',
+                'zh': 'Chinês',
+                'ja': 'Japonês'
+            };
+            
+            // Obter o nome do formato de exportação
+            const formatNames = {
+                'text': 'Texto',
+                'audio': 'Áudio',
+                'video': 'Vídeo Legendado'
+            };
+            
+            // Atualizar o prompt de comando
+            const commandText = document.querySelector('.command-text');
+            commandText.innerHTML = `
+                "Olá, VozMundo! Inicie uma nova tradução de áudio. 
+                Quero transcrever, traduzir e exportar este conteúdo com sincronização em tempo real. 
+                Idioma de origem: ${langNames[sourceLang]}. 
+                Idioma de destino: ${langNames[targetLang]}. 
+                Exportação em ${formatNames[exportFormat]}. 
+                Pronto para começar!"
+            `;
+            
+            // Efeito visual de confirmação
+            this.innerHTML = '<i class="fas fa-check"></i> Processando...';
+            this.style.backgroundColor = '#10b981';
+            
+            setTimeout(() => {
+                alert('Tradução iniciada com sucesso! Em uma implementação real, o processamento começaria agora.');
+                this.innerHTML = '<i class="fas fa-play"></i> Pronto para começar!';
+                this.style.backgroundColor = '';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
